@@ -12,7 +12,7 @@
     use base qw(CGI::Ex::App);
     use CGI::Ex::Dump qw(debug);
      
-    my $dbh = DBI->connect('DBI:mysql:[SERVER];host=localhost','charmst2_cgi','%Ey*1?cU;iDg',{AutoCommit => 0})
+    my $dbh = DBI->connect('DBI:mysql:[database];host=localhost','charmst2_cgi','%Ey*1?cU;iDg',{AutoCommit => 0})
                 || die "Could not connect to database: $DBI::errstr";
     my $dbresults = $dbh->selectall_hashref('SELECT * FROM henglong_users', 'Username');
     $dbh->disconnect();
@@ -171,7 +171,7 @@
     }
      
     sub account_finalize {
-      my $dbh = DBI->connect('DBI:mysql:charmst2_cgi;host=localhost','charmst2_cgi','%Ey*1?cU;iDg',{AutoCommit => 0})
+      my $dbh = DBI->connect('DBI:mysql:[database];host=localhost','charmst2_cgi','%Ey*1?cU;iDg',{AutoCommit => 0})
                 || die "Could not connect to database: $DBI::errstr";
       my $self = shift;
       my $username = $self->cookies->{'luuser'};
