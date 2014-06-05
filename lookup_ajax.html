@@ -1,0 +1,157 @@
+	
+
+    <!DOCTYPE html
+            PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+             "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+             
+    <!-- This is was the simple UI for the Perl lookup and implimentation of AJAX -->
+    
+    <html xmlns="http://www.w3.org/1999/xhtml" lang="en-US" xml:lang="en-US">
+    <head>
+    <title>A DNS Lookup</title>
+    <link rel="stylesheet" type="text/css" href="/css/dns_lookup.css" />
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+    <script type="text/javascript">
+    //Browser Support Code
+    function  ajaxRequest() {
+      if (typeof XMLHttpRequest == "undefined") {
+        XMLHttpRequest = function () {
+          try { return new ActiveXObject("Msnxml2.XMLHTTP.6.0"); }
+            catch (e) {}
+          try { return new ActiveXObject("Msnxml2.XMLHTTP.3.0"); }
+            catch (e) {}
+          try { return new ActiveXObject("Microsoft.XMLHTTP"); }
+            catch (e) {}
+          throw new Error("This browser is outdated. Please update it so you can use the interwebs.");
+        };
+      }
+      else {
+        return new XMLHttpRequest;
+      }
+    }
+     
+    function getDomain(domain) {
+      var request = ajaxRequest();
+      var domainElement = document.getElementById('dname');
+      var dataElement = document.getElementById('data');
+      domainElement.innerHTML = domain;
+      request.open("GET", "[% script_name %]?step=ajax&domain="+domain, true);
+      request.send("");
+      if (request.readyState == 4) {
+        var data = JSON.parse(request.responseText);
+        console.dir(data);
+        dataElement.innerHTML = '';
+        try {
+          dataElement.innerHTML = data;
+        }
+        catch (e){
+          //This is for stupid IE
+          var wrappingElement = document.createElement('div');
+          wrappingElement.innerHTML = data;
+          dataElement.appendChild(wrappingElement);
+        }
+      } else {
+        return false;
+      }
+    }
+     
+    </script>
+    </head>
+    <div class="loginbar">
+    [% IF person %]
+    <span class="loginlinks">
+    <a href="[% script_name %]/login">LOGOUT</a>
+    &nbsp;|&nbsp;
+    <a href="[% script_name %]/account">MY ACCOUNT</a>
+    </span>
+    [% ELSE %]
+    <span class="loginlinks">
+    <a href="[% script_name %]/login">LOGIN</a>
+    </span>
+    [% END %]
+    </div>
+    <body>
+    <div class="container">
+    <div class="header">
+    <center>
+    <h2>A New DNS Lookup</h2>
+    </center>
+    <p>This is my new AJAX version of the DNS lookup. It now contains more stuff, like javascript validation of the domain name that you entered.</p>
+    <form name="[% form_name %]" method="post">
+    <input type="hidden" name="step">
+    <center>
+    <input type="text" id="domain" name="domain" onKeyUp="getDomain(this.value);" />
+    </center>
+    <span id="domain_error" style="color:red">[% domain_error %]</span>
+    [% js_validation %]
+    </form>
+    <br />
+    </div>
+    <div class="domain">
+    <center>
+    <b>DOMAIN</b><br />
+    <span class="dname" id="dname">[% name %]</span><br />
+    <span id="data"></span>
+    </center><br/>
+    </div>
+    <div class="justhost">
+    <b>Just Host Name Servers:</b><br />
+    [% FOR a IN jhip %]
+    A Record: [% a %]<br />
+    [% END %]
+    [% FOR a IN jhmx %]
+    [% FOR exchange IN a.exchange %]
+    [% FOR preference in a.preference %]
+    MX Record: [% preference %]&nbsp;[% exchange %]<br />
+    [% END %]
+    [% END %]
+    [% END %]
+    [% FOR a IN jhnserver %]
+    Name Server: [% a %]<br />
+    [% END %]
+    [% FOR a IN jhserver %]
+    Server: [% a %]<br />
+    [% END %]
+    </div>
+    <div class="world">
+    <b>World Name Servers:</b><br />
+    [% FOR a IN ip %]
+    A Record: [% a %]<br />
+    [% END %]
+    [% FOR a IN mx %]
+    [% FOR exchange IN a.exchange %]
+    [% FOR preference in a.preference %]
+    MX Record: [% preference %]&nbsp;[% exchange %]<br />
+    [% END %]
+    [% END %]
+    [% END %]
+    [% FOR a IN nserver %]
+    Name Server: [% a %]<br />
+    [% END %]
+    [% FOR a IN server %]
+    Server: [% a %]<br />
+    [% END %]
+    </div>
+    <div class="bluehost">
+    <b>BlueHost Name Servers:</b><br />
+    [% FOR a IN bhip %]
+    A Record: [% a %]<br />
+    [% END %]
+    [% FOR a IN bhmx %]
+    [% FOR exchange IN a.exchange %]
+    [% FOR preference in a.preference %]
+    MX Record: [% preference %]&nbsp;[% exchange %]<br />
+    [% END %]
+    [% END %]
+    [% END %]
+    [% FOR a IN bhnserver %]
+    Name Server: [% a %]<br />
+    [% END %]
+    [% FOR a IN bhserver %]
+    Server: [% a %]<br />
+    [% END %]
+    </div>
+    </div>
+    </body>
+    </html>
+
